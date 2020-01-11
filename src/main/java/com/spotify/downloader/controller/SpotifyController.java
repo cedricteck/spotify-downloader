@@ -1,6 +1,7 @@
 package com.spotify.downloader.controller;
 
 import com.spotify.downloader.service.SpotifyService;
+import com.spotify.downloader.service.YoutubeService;
 import com.wrapper.spotify.model_objects.specification.Playlist;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,14 +13,18 @@ import java.util.List;
 public class SpotifyController {
 
     private final SpotifyService spotifyService;
+    private final YoutubeService youtubeService;
 
-    public SpotifyController(SpotifyService spotifyService) {
+    public SpotifyController(SpotifyService spotifyService, YoutubeService youtubeService) {
         this.spotifyService = spotifyService;
+        this.youtubeService = youtubeService;
     }
 
     @RequestMapping("/spotify/playlist/{playlistId}")
     public List<String> index(@PathVariable String playlistId) {
-        return spotifyService.getYoutubeUrls(playlistId);
+        List<String> videos = spotifyService.getYoutubeUrls(playlistId);
+        videos.forEach(youtubeService::getVideo);
+        return videos;
     }
 
     @RequestMapping("/hello")
